@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Presentation Speaking Brief Contract",
+  "type": "object",
+  "required": [
+    "script_tier",
+    "run_mode",
+    "source_type",
+    "output_language",
+    "slides_context",
+    "speaking_context",
+    "runtime_plan",
+    "page_scripts",
+    "revision_suggestions",
+    "qa_plan",
+    "rehearsal_plan",
+    "naturalness_pass",
+    "weakest_links",
+    "references_consulted",
+    "open_questions"
+  ],
+  "properties": {
+    "script_tier": {
+      "type": "string",
+      "enum": ["lite", "standard", "full"]
+    },
+    "run_mode": {
+      "type": "string",
+      "enum": ["interactive", "autonomous"]
+    },
+    "source_type": {
+      "type": "string",
+      "enum": ["pptx", "pdf", "html", "strategy_brief", "mixed"]
+    },
+    "output_language": {
+      "type": "string",
+      "minLength": 2
+    },
+    "slides_context": {
+      "type": "object",
+      "required": ["page_count", "extraction_warnings"],
+      "properties": {
+        "page_count": {
+          "type": ["integer", "string"],
+          "minimum": 0
+        },
+        "extraction_warnings": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["page", "title"],
+            "properties": {
+              "page": { "type": "integer", "minimum": 1 },
+              "title": { "type": "string" },
+              "source_page_id": { "type": "string" },
+              "title_hash": { "type": "string" },
+              "content_hash": { "type": "string" },
+              "slide_id": { "type": ["integer", "string", "null"] },
+              "html_locator": { "type": "string" },
+              "status": {
+                "type": "string",
+                "enum": ["extracted", "partial", "image_only", "needs_review", "needs_ocr", "visually_read"]
+              },
+              "page_image": { "type": "string" },
+              "embedded_images": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "visual_summary": { "type": "string" },
+              "visual_claims": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["claim", "confidence"],
+                  "properties": {
+                    "claim": { "type": "string" },
+                    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+                    "needs_verification": { "type": "boolean" }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "speaking_context": {
+      "type": "object",
+      "required": ["scenario", "audience", "industry", "speaker_role", "desired_action"],
+      "properties": {
+        "scenario": { "type": "string" },
+        "audience": { "type": "string" },
+        "industry": { "type": "string" },
+        "speaker_role": { "type": "string" },
+        "desired_action": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "runtime_plan": {
+      "type": "object",
+      "required": ["total_duration", "talk_time", "qa_time"],
+      "properties": {
+        "total_duration": { "type": "string" },
+        "talk_time": { "type": "string" },
+        "qa_time": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "page_scripts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["page", "title", "purpose", "talk_time", "verbatim_script", "transition", "compressed_version"],
+        "properties": {
+          "page": { "type": "integer", "minimum": 1 },
+          "title": { "type": "string" },
+          "purpose": { "type": "string" },
+          "talk_time": { "type": "string" },
+          "verbatim_script": { "type": "string" },
+          "transition": { "type": "string" },
+          "compressed_version": { "type": "string" },
+          "must_keep": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "source_page_id": { "type": "string" },
+          "title_hash": { "type": "string" },
+          "content_hash": { "type": "string" },
+          "slide_id": { "type": ["integer", "string", "null"] },
+          "html_locator": { "type": "string" },
+          "page_status": {
+            "type": "string",
+            "enum": ["extracted", "partial", "image_only", "needs_review", "needs_ocr", "visually_read"]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "revision_suggestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["page", "issue", "live_room_risk", "suggested_fix", "priority"],
+        "properties": {
+          "page": { "type": "integer", "minimum": 1 },
+          "issue": { "type": "string" },
+          "live_room_risk": { "type": "string" },
+          "suggested_fix": { "type": "string" },
+          "priority": {
+            "type": "string",
+            "enum": ["must_fix", "should_fix", "nice_to_have"]
+          },
+          "claim_status": {
+            "type": "string",
+            "enum": ["cited_in_slides", "present_without_source", "user_provided", "assumed", "read_from_image", "to_verify"]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "qa_plan": { "type": "array" },
+    "rehearsal_plan": { "type": "object" },
+    "timing_check": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string", "enum": ["ok", "overrun", "underrun", "not_run"] },
+        "estimated_talk_time": { "type": "string" },
+        "flagged_pages": {
+          "type": "array",
+          "items": { "type": "integer" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "naturalness_pass": {
+      "type": "object",
+      "properties": {
+        "protected_information": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "removed_patterns": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "needs_human_confirmation": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "weakest_links": { "type": "array" },
+    "references_consulted": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}
